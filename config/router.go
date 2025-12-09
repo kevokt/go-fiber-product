@@ -21,6 +21,7 @@ func Route(db *gorm.DB) {
 
 	// Register your routes here
 	routes.PostRouter(app, db)
+	routes.ProductRouter(app, db)
 
 	log.Fatalln(app.Listen(":" + os.Getenv("PORT")))
 }

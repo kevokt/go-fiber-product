@@ -16,5 +16,4 @@ func PostRouter(app *fiber.App, db *gorm.DB) {
 	postHandler := http.NewPostHandler(postService)
 
 	http.PostRoutes(app, postHandler)
-
 }

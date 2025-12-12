@@ -60,6 +60,11 @@ func (h *ProductHandler) CreateProduct(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(helper.APIResponse("Failed to create product", http.StatusInternalServerError, "error", err.Error()))
 	}
 
+	// Check if product, description, and quantity is empty
+	if req.Product == "" || req.Description == "" || req.Quantity == 0 {
+		return c.Status(http.StatusBadRequest).JSON(helper.APIResponse("Validation error", http.StatusBadRequest, "error", "Product, description, and quantity cannot be empty"))
+	}
+
 	// Return response
 	return c.Status(http.StatusCreated).JSON(helper.APIResponse("Product created successfully", http.StatusCreated, "success", nil))
 }

@@ -1,0 +1,61 @@
+Authentication
+1. POST /auth/register
+- Register with valid data 	-> 201 Created 		✔
+- Existing email 		-> 400 Bad Request 	✔
+- Missing fields 		-> 400 Bad Request 	✔
+- Weak password (< 6 char) 	-> 400 Bad Request 	✔
+
+2. POST /auth/login
+- Correct credentials 		-> 200 OK		✔
+- Wrong password 		-> 401 Unauthorized	✔
+- Unregistered email 		-> 404/401		✔
+- Missing fields 		 -> 400 Bad Request	✔
+
+Toko
+3. POST /toko
+- Valid 			-> 201 Created		✔
+- No token 			-> 401			✔
+- Invalid token 		-> 401			✔
+- Missing fields 		-> 400			✔
+
+4. GET /toko/my
+- Valid token 			-> 200 			✔
+- No token 			-> 401			✔
+- No toko 			-> 200 empty array	✔
+
+5. PUT /toko/:id
+- Valid 			-> 200			✔
+- Not owner 			-> 403			✔
+- Invalid ID 			-> 404			✔
+- No token 			-> 401			✔
+
+Products
+6. POST /products
+- Valid 			-> 201			✔
+- Not owner 			-> 403			✔
+- Missing fields 		-> 400			✔
+- No token 			-> 401			✔
+
+7. GET /toko/:id/products
+- Valid 			-> 200			✔
+- No products 			-> 200 empty		✔
+- Invalid toko 			-> 404			✔
+
+8. GET /products/:id
+- Valid 			-> 200			✔
+- Not found 			-> 404			✔
+- No token 			-> 401			✔
+
+9. PUT /products/:id
+- Valid 			-> 200			✔
+- Not owner 			-> 403			✔
+- Not found 			-> 404			✔
+- No token 			-> 401			✔
+- No Invalid			-> 401			✔
+
+10. DELETE /products/:id
+- Valid 			-> 200			✔
+- Not owner 			-> 403			✔
+- Not found 			-> 404			✔
+- No Invalid			-> 401			✔
+- No token 			-> 401			✔

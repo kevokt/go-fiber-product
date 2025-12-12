@@ -11,5 +11,5 @@ type User struct {
 	Password  string    `gorm:"type:varchar(255);not null" json:"-"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-	Tokos     []Toko    `gorm:"foreignKey:UserID" json:"tokos.omitempty"`
+	Tokos     []Toko    `gorm:"foreignKey:UserID;references:ID" json:"tokos,omitempty"`
 }

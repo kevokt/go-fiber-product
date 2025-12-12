@@ -35,7 +35,7 @@ Content-Type: application/json
   "address": "Jakarta, Indonesia"
 }
 
-### 2.2. Get My Toko (List all toko owned by logged-in user)
+### 2.2. Get My Toko (List all toko owned by user from token)
 GET http://localhost:3000/toko/my
 Authorization: Bearer {{token}}
 

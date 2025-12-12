@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-
+	"errors"
 	"go-fiber-modular/models"
 	"go-fiber-modular/modules/product/repository"
 )
@@ -15,56 +15,63 @@ func NewProductService(repo repository.ProductRepository) ProductService {
 	return &service{repo: repo}
 }
 
-func (s *service) FindByID(ctx context.Context, id int64) (*models.Product, error) {
-	return s.repo.FindByID(ctx, id)
-}
-
-func (s *service) Create(ctx context.Context, data CreateProductData) (*models.Product, error) {
+func (s *service) CreateProduct(ctx context.Context, data ProductRequest) error {
 	product := &models.Product{
+		TokoID:      data.TokoID,
 		Product:     data.Product,
 		Description: data.Description,
 		Quantity:    data.Quantity,
 	}
-
-	err := s.repo.Create(ctx, product)
-	if err != nil {
-		return nil, err
-	}
-	return product, nil
+	return s.repo.CreateProduct(ctx, product)
 }
 
-func (s *service) Update(ctx context.Context, data UpdateProductData) (*models.Product, error) {
-	product, err := s.repo.FindByID(ctx, data.ID)
+func (s *service) ListByToko(ctx context.Context, tokoID int64) ([]*models.Product, error) {
+	return s.repo.ListByToko(ctx, tokoID)
+}
+
+func (s *service) GetProduct(ctx context.Context, productID int64) (*models.Product, error) {
+	return s.repo.GetProduct(ctx, productID)
+}
+
+func (s *service) UpdateProduct(ctx context.Context, data ProductRequest) error {
+	// verify the product exists and belongs to the toko
+	product, err := s.repo.GetProduct(ctx, data.ID)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	if product == nil {
-		return nil, err
+
+	if product.TokoID != data.TokoID {
+		return errors.New("product not found or you don't have permission to update it")
 	}
 
 	product.Product = data.Product
 	product.Description = data.Description
 	product.Quantity = data.Quantity
-
-	err = s.repo.Update(ctx, product)
-	if err != nil {
-		return nil, err
-	}
-
-	return product, nil
+	return s.repo.UpdateProduct(ctx, product)
 }
 
-func (s *service) DeleteByID(ctx context.Context, id int64) (*models.Product, error) {
-	product, err := s.repo.FindByID(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	if product == nil {
-		return nil, err
-	}
-
-	err = s.repo.Delete(ctx, product)
-
-	return product, err
+func (s *service) DeleteProduct(ctx context.Context, productID int64) error {
+	return s.repo.DeleteProduct(ctx, productID)
 }
+
+/*
+POST /products
+CreateProduct 🔒
+Input Body wajibkirim toko_id. Validasi kepemilikan toko.
+
+GET /toko/:id/products ListByToko 🔒 Tampilkan semua
+produk berdasarkan ID
+Toko tertentu.
+
+GET /products/:id GetProduct 🔒 Lihat detail satu
+produk.
+
+PUT /products/:id UpdateProduct 🔒 Update produk
+(Cek apakah user
+pemilik toko produk
+tsb).
+
+DELETE /products/:id DeleteProduct 🔒 Hapus produk (Cek
+apakah user pemilik
+toko produk tsb)
+*/

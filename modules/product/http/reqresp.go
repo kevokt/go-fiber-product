@@ -1,75 +1,55 @@
 package http
 
 import (
-	"time"
+	"go-fiber-modular/models"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 )
 
-type ProductDetail struct {
-	ID          int64     `json:"id"`
-	Product     string    `json:"product"`
-	Description string    `json:"description"`
-	Quantity    int       `json:"quantity"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+var validate = validator.New()
+
+// Create Product Request/Response
+type CreateProductRequest struct {
+	TokoID      int64  `grom:"index" json:"toko_id" validate:"required"`
+	Product     string `json:"product" validate:"required"`
+	Description string `json:"description"`
+	Quantity    int    `json:"quantity" validate:"required"`
 }
 
-type (
-	ShowRequest struct {
-		ID int64 `params:"id"`
-	}
-	ShowResponse ProductDetail
-)
-
-func (r *ShowRequest) bind(c *fiber.Ctx) error {
-	return c.ParamsParser(r)
+type CreateProductResponse struct {
+	ID int64 `json:"id"`
 }
 
-type (
-	StoreRequest struct {
-		Product     string `json:"product"`
-		Description string `json:"description"`
-		Quantity    int    `json:"quantity"`
-	}
-	StoreResponse ProductDetail
-)
-
-func (r *StoreRequest) bind(c *fiber.Ctx) error {
-	return c.BodyParser(r)
-}
-
-type (
-	UpdateRequest struct {
-		ID          int64  `params:"id"`
-		Product     string `json:"product"`
-		Description string `json:"description"`
-		Quantity    int    `json:"quantity"`
-	}
-	UpdateResponse ProductDetail
-)
-
-func (r *UpdateRequest) bind(c *fiber.Ctx) error {
-	err := c.ParamsParser(r)
-	if err != nil {
+func (r *CreateProductRequest) bind(c *fiber.Ctx) error {
+	if err := c.BodyParser(r); err != nil {
 		return err
 	}
-	err = c.BodyParser(r)
-	if err != nil {
-		return err
-	}
-	return nil
+	return validate.Struct(r)
 }
 
-type (
-	DeleteRequest struct {
-		ID int64 `params:"id"`
-	}
-	DeleteResponse struct {
-		Deleted bool `json:"deleted"`
-	}
-)
+// List By Toko Request/Response
+type ListByTokoResponse struct {
+	Products []*models.Product `json:"products"`
+}
 
-func (r *DeleteRequest) bind(c *fiber.Ctx) error {
-	return c.ParamsParser(r)
+// Get Product Request/Response
+type GetProductResponse struct {
+	Product *models.Product `json:"product"`
+}
+
+// Update Product Request/Response
+type UpdateProductRequest struct {
+	ID          int64  `json:"id"`
+	TokoID      int64  `json:"toko_id" validate:"required"`
+	Product     string `json:"product" validate:"required"`
+	Description string `json:"description"`
+	Quantity    int    `json:"quantity" validate:"required"`
+}
+
+func (r *UpdateProductRequest) bind(c *fiber.Ctx) error {
+	if err := c.BodyParser(r); err != nil {
+		return err
+	}
+	return validate.Struct(r)
 }

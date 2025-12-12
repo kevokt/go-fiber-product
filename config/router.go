@@ -13,14 +13,14 @@ import (
 func Route(db *gorm.DB) {
 
 	app := fiber.New()
-	// Use the cors middleware to allow all origins and methods
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowMethods: "GET,POST,PUT,DELETE",
 	}))
 
 	// Register your routes here
-	routes.PostRouter(app, db)
+	routes.UserRouter(app, db)
+	routes.TokoRouter(app, db)
 	routes.ProductRouter(app, db)
 
 	log.Fatalln(app.Listen(":" + os.Getenv("PORT")))

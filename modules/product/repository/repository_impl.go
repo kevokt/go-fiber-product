@@ -2,40 +2,49 @@ package repository
 
 import (
 	"context"
-	"errors"
-
 	"go-fiber-modular/models"
 
 	"gorm.io/gorm"
 )
 
-type repository struct {
+type productRepository struct {
 	db *gorm.DB
 }
 
 func NewProductRepository(db *gorm.DB) ProductRepository {
-	return &repository{db: db}
+	return &productRepository{db: db}
 }
 
-func (r *repository) FindByID(ctx context.Context, id int64) (*models.Product, error) {
-	var product *models.Product
-	err := r.db.WithContext(ctx).First(&product, id).Error
+func (r *productRepository) CreateProduct(ctx context.Context, product *models.Product) error {
+	return r.db.Create(product).Error
+}
 
-	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, nil
+func (r *productRepository) DeleteProduct(ctx context.Context, productID int64) error {
+	return r.db.Where("id = ?", productID).Delete(&models.Product{}).Error
+}
+
+func (r *productRepository) ListByToko(ctx context.Context, tokoID int64) ([]*models.Product, error) {
+	var products []*models.Product
+	err := r.db.Where("toko_id = ?", tokoID).Find(&products).Error
+	if err != nil {
+		return nil, err
 	}
-
-	return product, err
+	return products, nil
 }
 
-func (r *repository) Create(ctx context.Context, product *models.Product) error {
-	return r.db.WithContext(ctx).Create(product).Error
+func (r *productRepository) GetProduct(ctx context.Context, productID int64) (*models.Product, error) {
+	var product models.Product
+	err := r.db.Where("id = ?", productID).First(&product).Error
+	if err != nil {
+		return nil, err
+	}
+	return &product, nil
 }
 
-func (r *repository) Update(ctx context.Context, product *models.Product) error {
-	return r.db.WithContext(ctx).Save(product).Error
+func (r *productRepository) UpdateProduct(ctx context.Context, product *models.Product) error {
+	return r.db.Save(product).Error
 }
 
-func (r *repository) Delete(ctx context.Context, product *models.Product) error {
-	return r.db.WithContext(ctx).Delete(product).Error
+func (r *productRepository) DeleteByToko(ctx context.Context, tokoID int64) error {
+	return r.db.Where("toko_id = ?", tokoID).Delete(&models.Product{}).Error
 }

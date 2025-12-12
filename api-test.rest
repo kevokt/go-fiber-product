@@ -1,0 +1,87 @@
+# API TESTS
+
+# Variable to store the authentication token
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMywiZW1haWwiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImV4cCI6MTc2NTU5NTIyMywiaWF0IjoxNzY1NTA4ODIzfQ.PNazCoLSriJTugXqz39vxzYPiv-eXOBG7Zs1Ob4F5Ls
+
+# 1. AUTH ENDPOINTS
+
+### 1.1. Register User
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "testuser@example.com",
+  "password": "password123"
+}
+
+### 1.2. Login User
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "password123"
+}
+
+# 2. TOKO ENDPOINTS
+### 2.1. Create Toko
+POST http://localhost:3000/toko
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "My Electronics Store",
+  "address": "Jakarta, Indonesia"
+}
+
+### 2.2. Get My Toko (List all toko owned by logged-in user)
+GET http://localhost:3000/toko/my
+Authorization: Bearer {{token}}
+
+### 2.3. Update Toko
+PUT http://localhost:3000/toko/30
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Updated Electronics Store",
+  "address": "Bandung, Indonesia"
+}
+
+# 3. PRODUCT ENDPOINTS
+### 3.1. Create Product
+POST http://localhost:3000/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "toko_id": 30,
+  "product": "Mechanical Keyboard",
+  "description": "RGB Mechanical Gaming Keyboard",
+  "quantity": 15
+}
+
+### 3.2. List Products by Toko ID
+GET http://localhost:3000/toko/30/products
+Authorization: Bearer {{token}}
+
+### 3.3. Get Product by ID
+GET http://localhost:3000/products/13
+Authorization: Bearer {{token}}
+
+### 3.4. Update Product
+PUT http://localhost:3000/products/13
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "toko_id": 30,
+  "product": "Updated Mechanical Keyboard",
+  "description": "RGB Mechanical Gaming Keyboard - Updated",
+  "quantity": 20
+}
+
+### 3.5. Delete Product
+DELETE http://localhost:3000/products/13
+Authorization: Bearer {{token}}

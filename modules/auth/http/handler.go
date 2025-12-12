@@ -9,20 +9,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-/*
-Method Endpoint Function
-Name
-Keterangan
-
-POST /auth/register Register
-Input: Name, Email, Password.
-Output: Created User.
-
-POST /auth/login Login
-Input: Email, Password.
-Output: JWT Token
-*/
-
 type AuthHandler struct {
 	service service.AuthService
 }
